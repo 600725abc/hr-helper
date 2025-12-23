@@ -4,12 +4,12 @@
 
 <div align="center">
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+</div>  
 
 ## ✨ 特色功能
 
 - **幸運抽獎**: 流暢的滾動動畫，即時記錄中獎者。
-- **智能分組**: 自動將名單打亂並分成指定數量的小組。
+- **智能分組**: 自動將名單打亂並分成指定數量的小組。 
 - **名單管理**: 簡單的貼上匯入機制。
 - **技術棧**: 使用 React 19 + TypeScript + Vite + Tailwind CSS。
 
@@ -21,7 +21,7 @@
    ```bash
    npm install
    ```
-2. **啟動開發伺服器:**
+2. **啟動開發伺服器:** 
    ```bash
    npm run dev
    ```
