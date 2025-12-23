@@ -21,25 +21,23 @@ const App: React.FC = () => {
     setWinners([]);
   }, []);
 
-  // Execute the logic to pick a winner (One way only)
+  // Execute the logic to pick a winner
   const handleDraw = useCallback(() => {
-    setRemainingNames((prevRemaining) => {
-      if (prevRemaining.length === 0) return prevRemaining;
+    if (remainingNames.length === 0) return;
 
-      // Pick random index
-      const randomIndex = Math.floor(Math.random() * prevRemaining.length);
-      const winnerName = prevRemaining[randomIndex];
+    // Pick random index
+    const randomIndex = Math.floor(Math.random() * remainingNames.length);
+    const winnerName = remainingNames[randomIndex];
 
-      // Remove from remaining
-      const newRemaining = [...prevRemaining];
-      newRemaining.splice(randomIndex, 1);
-
-      // Add to winners
-      setWinners((prevWinners) => [...prevWinners, winnerName]);
-
-      return newRemaining;
+    // Update both states
+    setRemainingNames((prev) => {
+      const newHelper = [...prev];
+      newHelper.splice(randomIndex, 1);
+      return newHelper;
     });
-  }, []);
+    
+    setWinners((prev) => [...prev, winnerName]);
+  }, [remainingNames]);
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-slate-900 text-slate-100 overflow-hidden font-sans">

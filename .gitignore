@@ -22,3 +22,20 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment variables
+.env
+.env.production
+.env.local
+.env.*.local
+
+# Vite
+*.tsbuildinfo
+node_modules
+dist
+dist-ssr
+*.local
+
+# System files
+Thumbs.db
+desktop.ini
