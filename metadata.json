@@ -1,0 +1,5 @@
+{
+  "name": "Grand Stage Lottery",
+  "description": "A high-impact, stage-ready lottery application for live events. Features CSV import, duplicate prevention, and dramatic draw animations.",
+  "requestFramePermissions": []
+}
