@@ -26,7 +26,7 @@ export const Lottery: React.FC<LotteryProps> = ({ remainingNames, winners, onDra
     if (remainingNames.length === 0) return;
 
     setIsRolling(true);
-    
+
     // Fast rolling animation
     timerRef.current = window.setInterval(() => {
       const randomIndex = Math.floor(Math.random() * remainingNames.length);
@@ -42,9 +42,9 @@ export const Lottery: React.FC<LotteryProps> = ({ remainingNames, winners, onDra
   };
 
   // Determine displayText
-  let displayText = "等待抽獎";
+  let displayText = "等待開獎";
   if (!hasLoadedNames) {
-    displayText = "請先載入名單";
+    displayText = "請先匯入名單 (Step 1)";
   } else if (isRolling) {
     displayText = rollingName;
   } else if (currentWinner) {
@@ -58,102 +58,103 @@ export const Lottery: React.FC<LotteryProps> = ({ remainingNames, winners, onDra
   const canDraw = hasLoadedNames && remainingNames.length > 0 && !isRolling;
 
   return (
-    <div className="flex flex-col h-full w-full">
-      
-      {/* Main Center Stage */}
-      <div className="flex-1 flex flex-col items-center justify-center p-8">
-        
-        {/* The Reveal Box */}
-        <div className="relative mb-16 w-full max-w-5xl text-center">
-          {/* Glow Effect */}
-          <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-500/20 blur-3xl rounded-full transition-opacity duration-500 ${isRolling ? 'opacity-100' : 'opacity-20'}`}></div>
-          
-          {currentWinner && !isRolling && (
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-amber-500/10 blur-3xl rounded-full animate-pulse"></div>
-          )}
+    <div className="flex flex-col h-full w-full relative">
 
-          {/* Text Display */}
-          <h1 
-            className={`
-              relative z-10 font-black tracking-tight leading-none break-words select-none transition-all duration-200
-              ${isRolling ? 'text-7xl md:text-9xl text-slate-300 blur-[1px]' : ''}
-              ${!isRolling && currentWinner ? 'text-7xl md:text-9xl text-transparent bg-clip-text bg-gradient-to-b from-amber-300 via-yellow-400 to-amber-600 drop-shadow-2xl scale-110' : ''}
-              ${!isRolling && !currentWinner ? 'text-5xl md:text-7xl text-slate-700' : ''}
-            `}
-          >
-            {displayText}
-          </h1>
+      {/* 1. Control Area (The Button) - Top Dominant */}
+      <div className="z-20 flex flex-col items-center justify-center pt-12 pb-8">
+        <button
+          onClick={startDraw}
+          disabled={!canDraw}
+          className={`
+            group relative px-20 py-8 rounded-full text-4xl md:text-5xl font-black tracking-wider transition-all duration-300 shadow-[0_0_40px_rgba(59,130,246,0.5)]
+            ${!hasLoadedNames
+              ? 'bg-slate-800 text-slate-600 cursor-not-allowed border-4 border-slate-700 opacity-50 grayscale'
+              : isFinished
+                ? 'bg-slate-800 text-slate-500 cursor-not-allowed border-4 border-slate-700'
+                : isRolling
+                  ? 'bg-indigo-600 text-white cursor-wait scale-95 opacity-90 border-4 border-indigo-400/30'
+                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:scale-110 hover:-translate-y-1 active:scale-95 border-4 border-white/20 hover:shadow-[0_0_80px_rgba(59,130,246,0.6)]'
+            }
+          `}
+        >
+          {isRolling ? "抽獎中..." : isFinished ? "名單已空" : "🔥 開始抽獎"}
+
+          {/* Ripple effect hint */}
+          {!isRolling && canDraw && (
+            <span className="absolute -inset-1 rounded-full bg-blue-500/30 animate-ping -z-10"></span>
+          )}
+        </button>
+
+        {!hasLoadedNames && (
+          <p className="mt-4 text-slate-500 text-sm font-medium animate-pulse">
+            ☝️ 請先在上方完成 Step 1
+          </p>
+        )}
+      </div>
+
+      {/* 2. Result Area (The Stage) - Below */}
+      <div className="flex-1 flex flex-col items-center justify-start min-h-[300px]">
+
+        <div className="relative w-full text-center">
+          {/* Glow Effect */}
+          <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[150px] bg-blue-500/10 blur-3xl rounded-full transition-opacity duration-500 ${isRolling ? 'opacity-100' : 'opacity-20'}`}></div>
+
+          <h2 className="text-sm font-bold text-slate-500 mb-4 tracking-[0.2em] uppercase">Current Result</h2>
+
+          {/* The Name */}
+          <div className={`
+             relative z-10 transition-all duration-200 py-4
+             ${isRolling ? 'scale-110 blur-[1px]' : ''}
+           `}>
+            <span className={`
+               font-black text-6xl md:text-8xl leading-tight
+               ${!isRolling && currentWinner
+                ? 'text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-yellow-400 to-amber-600 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]'
+                : 'text-slate-700'
+              }
+             `}>
+              {displayText}
+            </span>
+          </div>
 
           {!isRolling && currentWinner && (
-            <div className="mt-8 text-amber-500/80 text-2xl font-bold tracking-widest uppercase animate-bounce">
-              恭喜中獎！
+            <div className="mt-4 inline-block bg-amber-500/20 border border-amber-500/50 rounded-full px-6 py-1 text-amber-400 text-sm font-bold tracking-widest animate-bounce">
+              🎉 恭喜中獎！
             </div>
           )}
         </div>
 
-        {/* The Big Button */}
-        <div className="z-20 flex flex-col items-center gap-4">
-          <button
-            onClick={startDraw}
-            disabled={!canDraw}
-            className={`
-              group relative px-16 py-6 rounded-full text-3xl md:text-4xl font-black tracking-wider transition-all duration-200 shadow-2xl
-              ${!hasLoadedNames 
-                ? 'bg-slate-800 text-slate-600 cursor-not-allowed border-4 border-slate-700 opacity-50'
-                : isFinished
-                  ? 'bg-slate-800 text-slate-500 cursor-not-allowed border-4 border-slate-700'
-                  : isRolling
-                    ? 'bg-indigo-600 text-white cursor-wait scale-95 opacity-90 border-4 border-indigo-400/30'
-                    : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:scale-105 active:scale-95 border-4 border-blue-400/30 hover:shadow-blue-500/50'
-              }
-            `}
-          >
-            {isRolling ? "抽獎中..." : isFinished ? "名單已空" : "抽出得主"}
-          </button>
-          
-          {!hasLoadedNames && (
-            <p className="text-slate-500 text-sm animate-pulse">
-              ← 請先在左側面板載入名單
-            </p>
-          )}
-
-          {isFinished && (
-            <p className="text-red-400 font-bold text-lg bg-red-900/20 px-4 py-2 rounded-lg border border-red-900/50">
-              名單已抽完，無法歸零或重抽
-            </p>
-          )}
-        </div>
       </div>
 
-      {/* History Panel */}
-      <div className="h-32 md:h-40 bg-slate-900/80 backdrop-blur border-t border-slate-800 p-4 flex flex-col">
-        <h3 className="text-slate-500 text-xs font-bold mb-3 flex items-center gap-2">
-          <span>中獎名單紀錄</span>
-          <span className="bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full text-[10px]">{winners.length}</span>
-        </h3>
-        
-        <div className="flex-1 flex gap-3 overflow-x-auto items-center pb-2 custom-scrollbar">
+      {/* 3. History Ticker - Bottom */}
+      <div className="bg-slate-900/80 backdrop-blur border-t border-slate-800 p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-2 h-2 rounded-full bg-green-500"></div>
+          <span className="text-xs font-bold text-slate-400">最新中獎</span>
+        </div>
+        <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
           {winners.length === 0 ? (
-            <span className="text-slate-700 italic text-sm">尚未產生中獎者...</span>
+            <div className="text-slate-700 text-xs italic px-2">等待第一位幸運兒...</div>
           ) : (
             winners.slice().reverse().map((name, idx) => (
-              <div 
-                key={`${name}-${idx}`} 
+              <div
+                key={`${name}-${idx}`}
                 className={`
-                  flex-shrink-0 px-6 py-3 rounded-lg border flex items-center gap-3 shadow-sm
-                  ${idx === 0 
-                    ? 'bg-amber-500/10 border-amber-500/50 text-amber-300 ring-1 ring-amber-500/30' 
-                    : 'bg-slate-800 border-slate-700 text-slate-400'
+                  flex-shrink-0 px-4 py-2 rounded border flex items-center gap-2
+                  ${idx === 0
+                    ? 'bg-amber-500/10 border-amber-500/30 text-amber-200'
+                    : 'bg-slate-800 border-slate-700 text-slate-500'
                   }
                 `}
               >
                 <span className="text-xs font-mono opacity-50">#{winners.length - idx}</span>
-                <span className="font-bold text-lg whitespace-nowrap">{name}</span>
+                <span className="font-bold whitespace-nowrap">{name}</span>
               </div>
             ))
           )}
         </div>
       </div>
+
     </div>
   );
 };

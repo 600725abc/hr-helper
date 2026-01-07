@@ -8,7 +8,7 @@ const App: React.FC = () => {
   const [allNames, setAllNames] = useState<string[]>([]);
   const [remainingNames, setRemainingNames] = useState<string[]>([]);
   const [winners, setWinners] = useState<string[]>([]);
-  
+
   // View Mode: 'lottery' or 'grouping'
   const [currentTab, setCurrentTab] = useState<'lottery' | 'grouping'>('lottery');
 
@@ -35,79 +35,115 @@ const App: React.FC = () => {
       newHelper.splice(randomIndex, 1);
       return newHelper;
     });
-    
+
     setWinners((prev) => [...prev, winnerName]);
   }, [remainingNames]);
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-slate-900 text-slate-100 overflow-hidden font-sans">
-      {/* Left Sidebar: Controls & Stats */}
-      <aside className="w-full md:w-80 bg-slate-800 border-r border-slate-700 flex flex-col z-20 shadow-2xl">
-        <div className="p-6 border-b border-slate-700 bg-slate-900/50">
-          <h1 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500 tracking-tighter">
-            幸運抽獎系統
-          </h1>
-          <p className="text-xs text-slate-400 mt-1 tracking-widest">活動控制中心</p>
+    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans selection:bg-blue-500/30">
+
+      {/* Header & Instructions */}
+      <header className="bg-slate-800 border-b border-slate-700 pt-8 pb-6 px-4 text-center shadow-lg relative z-10">
+        <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500 tracking-tighter mb-3">
+          幸運抽獎系統
+        </h1>
+        <p className="text-slate-400 text-base md:text-lg mb-6 max-w-2xl mx-auto">
+          簡單、公平的抽獎工具。匯入名單，立即開始抽出幸運得主！
+        </p>
+
+        {/* Stepper */}
+        <div className="flex justify-center items-center gap-2 md:gap-4 text-sm md:text-base font-medium text-slate-500">
+          <div className="flex items-center gap-2">
+            <span className="bg-slate-700 text-slate-300 w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
+            匯入名單
+          </div>
+          <div className="h-px w-8 bg-slate-700"></div>
+          <div className="flex items-center gap-2">
+            <span className="bg-slate-700 text-slate-300 w-6 h-6 rounded-full flex items-center justify-center text-xs">2</span>
+            開始抽獎
+          </div>
+          <div className="h-px w-8 bg-slate-700"></div>
+          <div className="flex items-center gap-2">
+            <span className="bg-slate-700 text-slate-300 w-6 h-6 rounded-full flex items-center justify-center text-xs">3</span>
+            查看結果
+          </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-6">
-          <ImportList 
-            onImport={handleImport} 
-            stats={{
-              total: allNames.length,
-              remaining: remainingNames.length,
-              winnerCount: winners.length
-            }}
-          />
+        {/* Mode Switcher (Secondary) */}
+        <div className="absolute top-4 right-4 flex gap-2">
+          <div className="bg-slate-900/50 p-1 rounded-lg flex border border-slate-700">
+            <button
+              onClick={() => setCurrentTab('lottery')}
+              className={`px-3 py-1 text-xs rounded-md transition-all ${currentTab === 'lottery' ? 'bg-blue-600 text-white shadow' : 'text-slate-400 hover:text-white'
+                }`}
+            >
+              抽獎
+            </button>
+            <button
+              onClick={() => setCurrentTab('grouping')}
+              className={`px-3 py-1 text-xs rounded-md transition-all ${currentTab === 'grouping' ? 'bg-emerald-600 text-white shadow' : 'text-slate-400 hover:text-white'
+                }`}
+            >
+              分組
+            </button>
+          </div>
         </div>
-        
-        {/* Footer info */}
-        <div className="p-4 text-center text-slate-600 text-xs border-t border-slate-700">
-          準備就緒
-        </div>
-      </aside>
+      </header>
 
-      {/* Main Stage */}
-      <main className="flex-1 relative flex flex-col bg-slate-950 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
-        
-        {/* Mode Switcher Tabs */}
-        <div className="flex justify-center p-4 gap-4 z-30">
-          <button
-            onClick={() => setCurrentTab('lottery')}
-            className={`px-8 py-3 rounded-full font-bold text-lg transition-all duration-200 shadow-lg ${
-              currentTab === 'lottery'
-                ? 'bg-blue-600 text-white shadow-blue-900/50 scale-105'
-                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-            }`}
-          >
-            抽獎模式
-          </button>
-          <button
-            onClick={() => setCurrentTab('grouping')}
-            className={`px-8 py-3 rounded-full font-bold text-lg transition-all duration-200 shadow-lg ${
-              currentTab === 'grouping'
-                ? 'bg-emerald-600 text-white shadow-emerald-900/50 scale-105'
-                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-            }`}
-          >
-            分組模式
-          </button>
-        </div>
+      <main className="max-w-4xl mx-auto p-4 md:p-8 space-y-8">
 
-        {/* Content Area */}
-        <div className="flex-1 relative overflow-hidden flex flex-col">
-          {currentTab === 'lottery' ? (
-            <Lottery 
-              remainingNames={remainingNames}
-              winners={winners}
-              onDraw={handleDraw}
-              hasLoadedNames={allNames.length > 0}
+        {/* Step 1: Import */}
+        <section className={`transition-all duration-500 ${allNames.length > 0 ? 'opacity-50 grayscale hover:opacity-100 hover:grayscale-0' : 'opacity-100'}`}>
+          <div className="flex items-center gap-3 mb-4">
+            <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold uppercase tracking-wider">Step 1</span>
+            <h2 className="text-xl font-bold text-slate-200">準備名單</h2>
+          </div>
+
+          <div className="bg-slate-800 rounded-2xl p-6 shadow-xl border border-slate-700/50">
+            <ImportList
+              onImport={handleImport}
+              stats={{
+                total: allNames.length,
+                remaining: remainingNames.length,
+                winnerCount: winners.length
+              }}
             />
-          ) : (
+          </div>
+        </section>
+
+        {/* Step 2 & 3: Action Area */}
+        {currentTab === 'lottery' && (
+          <section className="animate-in slide-in-from-bottom-4 fade-in duration-700">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="bg-amber-600 text-white px-2 py-1 rounded text-xs font-bold uppercase tracking-wider">Step 2 & 3</span>
+              <h2 className="text-xl font-bold text-slate-200">進行抽獎</h2>
+            </div>
+
+            <div className="bg-slate-950 rounded-2xl border-4 border-slate-800 shadow-2xl relative overflow-hidden min-h-[500px]">
+              {/* Background Effects */}
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black opacity-50 pointer-events-none"></div>
+
+              <Lottery
+                remainingNames={remainingNames}
+                winners={winners}
+                onDraw={handleDraw}
+                hasLoadedNames={allNames.length > 0}
+              />
+            </div>
+          </section>
+        )}
+
+        {currentTab === 'grouping' && (
+          <section className="animate-in slide-in-from-bottom-4 fade-in duration-700">
             <Grouping names={allNames} />
-          )}
-        </div>
+          </section>
+        )}
+
       </main>
+
+      <footer className="text-center p-8 text-slate-600 text-xs">
+        HR Helper &copy; 2026
+      </footer>
     </div>
   );
 };
