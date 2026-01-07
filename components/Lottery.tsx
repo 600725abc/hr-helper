@@ -93,59 +93,43 @@ export const Lottery: React.FC<LotteryProps> = ({ remainingNames, winners, onDra
       </div>
 
       {/* 2. Result Area (The Stage) - Below */}
-      <div className="flex-1 flex flex-col items-center justify-start min-h-[300px]">
+      <div className="flex-1 flex flex-col items-center justify-start min-h-[300px] relative z-10">
 
         <div className="relative w-full text-center">
           {/* Glow Effect */}
           <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[150px] bg-blue-500/10 blur-3xl rounded-full transition-opacity duration-500 ${isRolling ? 'opacity-100' : 'opacity-20'}`}></div>
 
-          <h2 className="text-sm font-bold text-slate-500 mb-4 tracking-[0.2em] uppercase">Current Result</h2>
+          {/* Winner Label or Current Status */}
+          <h2 className="text-sm font-bold text-slate-500 mb-4 tracking-[0.2em] uppercase min-h-[1.5em]">
+            {!isRolling && currentWinner ? (
+              <span className="text-amber-400 text-xl md:text-2xl font-bold tracking-[0.3em] uppercase winner-label-enter block">
+                🎉 恭喜中獎
+              </span>
+            ) : "Current Result"}
+          </h2>
 
-          {/* The Name - shown during rolling or when no winner yet */}
+          {/* The Name */}
           <div className={`
              relative z-10 transition-all duration-200 py-4
              ${isRolling ? 'scale-110 blur-[1px]' : ''}
            `}>
-            <span className="font-black text-6xl md:text-8xl leading-tight text-slate-700">
-              {isRolling ? rollingName : (!currentWinner ? displayText : '—')}
-            </span>
+            {/* If winner exists and not rolling, show BIG animated winner name */}
+            {!isRolling && currentWinner ? (
+              <div className="winner-name-enter">
+                <span className="font-black text-7xl md:text-9xl leading-none text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-yellow-400 to-amber-600 drop-shadow-[0_10px_30px_rgba(251,191,36,0.5)]">
+                  {currentWinner}
+                </span>
+              </div>
+            ) : (
+              /* Normal display for rolling / waiting */
+              <span className="font-black text-6xl md:text-8xl leading-tight text-slate-700">
+                {isRolling ? rollingName : (!currentWinner ? displayText : '—')}
+              </span>
+            )}
           </div>
         </div>
 
       </div>
-
-      {/* Winner Spotlight Overlay - shows when winner is revealed */}
-      {!isRolling && currentWinner && (
-        <>
-          {/* Backdrop dim */}
-          <div className="winner-backdrop" />
-
-          {/* Spotlight content */}
-          <div className="winner-spotlight">
-            {/* Shimmer effect */}
-            <div className="winner-shimmer" />
-
-            {/* 恭喜中獎 - Secondary text ABOVE the name */}
-            <div className="winner-label-enter mb-4">
-              <span className="text-amber-400 text-xl md:text-2xl font-bold tracking-[0.3em] uppercase">
-                🎉 恭喜中獎
-              </span>
-            </div>
-
-            {/* Winner Name - BIGGEST, BOLDEST, CENTERED */}
-            <div className="winner-name-enter text-center px-4">
-              <span className="font-black text-7xl md:text-9xl lg:text-[10rem] leading-none text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-yellow-400 to-amber-600 drop-shadow-[0_10px_30px_rgba(251,191,36,0.5)]">
-                {currentWinner}
-              </span>
-            </div>
-
-            {/* Tap hint */}
-            <p className="winner-label-enter mt-8 text-slate-400 text-sm">
-              點擊「開始抽獎」繼續
-            </p>
-          </div>
-        </>
-      )}
 
       {/* 3. History Ticker - Bottom */}
       <div className="bg-slate-900/80 backdrop-blur border-t border-slate-800 p-4">
