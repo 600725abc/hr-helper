@@ -101,30 +101,51 @@ export const Lottery: React.FC<LotteryProps> = ({ remainingNames, winners, onDra
 
           <h2 className="text-sm font-bold text-slate-500 mb-4 tracking-[0.2em] uppercase">Current Result</h2>
 
-          {/* The Name */}
+          {/* The Name - shown during rolling or when no winner yet */}
           <div className={`
              relative z-10 transition-all duration-200 py-4
              ${isRolling ? 'scale-110 blur-[1px]' : ''}
            `}>
-            <span className={`
-               font-black text-6xl md:text-8xl leading-tight
-               ${!isRolling && currentWinner
-                ? 'text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-yellow-400 to-amber-600 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]'
-                : 'text-slate-700'
-              }
-             `}>
-              {displayText}
+            <span className="font-black text-6xl md:text-8xl leading-tight text-slate-700">
+              {isRolling ? rollingName : (!currentWinner ? displayText : '—')}
             </span>
           </div>
-
-          {!isRolling && currentWinner && (
-            <div className="mt-4 inline-block bg-amber-500/20 border border-amber-500/50 rounded-full px-6 py-1 text-amber-400 text-sm font-bold tracking-widest animate-bounce">
-              🎉 恭喜中獎！
-            </div>
-          )}
         </div>
 
       </div>
+
+      {/* Winner Spotlight Overlay - shows when winner is revealed */}
+      {!isRolling && currentWinner && (
+        <>
+          {/* Backdrop dim */}
+          <div className="winner-backdrop" />
+
+          {/* Spotlight content */}
+          <div className="winner-spotlight">
+            {/* Shimmer effect */}
+            <div className="winner-shimmer" />
+
+            {/* 恭喜中獎 - Secondary text ABOVE the name */}
+            <div className="winner-label-enter mb-4">
+              <span className="text-amber-400 text-xl md:text-2xl font-bold tracking-[0.3em] uppercase">
+                🎉 恭喜中獎
+              </span>
+            </div>
+
+            {/* Winner Name - BIGGEST, BOLDEST, CENTERED */}
+            <div className="winner-name-enter text-center px-4">
+              <span className="font-black text-7xl md:text-9xl lg:text-[10rem] leading-none text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-yellow-400 to-amber-600 drop-shadow-[0_10px_30px_rgba(251,191,36,0.5)]">
+                {currentWinner}
+              </span>
+            </div>
+
+            {/* Tap hint */}
+            <p className="winner-label-enter mt-8 text-slate-400 text-sm">
+              點擊「開始抽獎」繼續
+            </p>
+          </div>
+        </>
+      )}
 
       {/* 3. History Ticker - Bottom */}
       <div className="bg-slate-900/80 backdrop-blur border-t border-slate-800 p-4">
