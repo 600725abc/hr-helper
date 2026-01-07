@@ -5,8 +5,10 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
+  // GitHub Pages needs /hr-helper/, Vercel needs /
+  const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
   return {
-    base: '/hr-helper/',
+    base: isGitHubPages ? '/hr-helper/' : '/',
     server: {
       port: 3000,
       host: '0.0.0.0',
